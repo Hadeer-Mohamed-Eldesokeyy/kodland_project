@@ -1,103 +1,100 @@
-# FOREST ESCAPE
+# Forest Escape
 
-## ABOUT THE GAME
+Forest Escape is a simple 2D platformer game built with Python using Pygame Zero.
 
-Forest Escape is a small platformer game made with Pygame Zero.
+The main goal is to make your way to the flag at the top of the level. You need to jump between platforms, avoid enemies, and make sure you do not fall off the screen.
 
-The goal is to reach the flag at the top of the level. The player needs
-to jump across the platforms while avoiding the zombie and the soldier.
-The game ends if the player touches an enemy or falls off the screen.
+## About the Game
 
-Controls:
+The player starts at the bottom of the level and has to work their way up by jumping across different platforms. There are two enemies in the level, a zombie and a soldier, each moving within its own area.
 
-Left / Right arrow keys - Move
-Space - Jump
-Mouse - Use the menu buttons
+If the player touches an enemy or falls off the screen, the game is over. Reaching the flag means you win.
 
-## HOW TO RUN THE GAME
+## Controls
 
-1. Make sure Python is installed.
+| Key                     | Action               |
+| ----------------------- | -------------------- |
+| Left / Right Arrow Keys | Move left or right   |
+| Space                   | Jump                 |
+| Mouse                   | Use the menu buttons |
 
-2. Install Pygame Zero:
-
-   pip install pgzero
-
-3. Open the project folder and run:
-
-   pgzrun game.py
-
-The images, sounds and music should already be inside their folders.
-
-## LIBRARIES USED
-
-The project uses:
-
-* Pygame Zero
-* pygame.Rect
-
-Rect is only imported for collision detection, which is allowed in the
-project requirements.
-
-No other external libraries are used.
-
-## GAME FEATURES
+## Features
 
 The game includes:
 
-* A main menu
-* Start Game button
-* Sound on/off button
-* Exit button
-* A player that can move and jump
-* Platforms
+* A main menu with Start, Sound, and Exit buttons
+* Player movement and jumping
+* Platform collisions
 * Two different enemies
-* Enemies that patrol in their own areas
+* Enemy patrol movement
 * Idle and walking animations
 * Background music
-* Jump, hit and win sounds
-* A win condition when the player reaches the flag
-* A lose condition when the player touches an enemy or falls
+* Sound effects for jumping, getting hit, and winning
+* Win and lose conditions
 
-## FILES AND FOLDERS
+## How to Run
 
+First, make sure Python is installed on your computer.
+
+Then install Pygame Zero:
+
+```bash id="80o2fc"
+pip install pgzero
+```
+
+Open a terminal in the project folder and run:
+
+```bash id="ztue3m"
+pgzrun game.py
+```
+
+Make sure the `images`, `sounds`, and `music` folders are in the same project directory so the game can load all the required assets.
+
+## Project Structure
+
+```text id="ojz91t"
 game_project/
-
+│
+├── game.py
+├── README.md
+│
+├── images/
+│   ├── Player and enemy sprites
+│   └── Flag image
+│
+├── sounds/
+│   ├── jump.ogg
+│   ├── hit.ogg
+│   └── win.ogg
+│
+└── music/
+    └── theme.ogg
 ```
-game.py
-readme.txt
 
-images/
-    Player and enemy sprites
-    Flag image
+## Technologies Used
 
-sounds/
-    jump.ogg
-    hit.ogg
-    win.ogg
+This project was built using:
 
-music/
-    theme.ogg
-```
+* Python
+* Pygame Zero
+* `pygame.Rect` for collision detection
 
-## ASSETS
+No other external libraries are used.
 
-The images, sounds and music used in this project are from Kenney.
+## Code Structure
 
-Website:
-https://kenney.nl
+The game uses classes to organize the characters and their behavior.
 
-The assets are free to use under the CC0 license.
+The `Character` class contains the shared animation logic.
 
-## CODE STRUCTURE
+The `Player` class handles movement, jumping, gravity, and collisions with the platforms.
 
-The game uses classes for the characters and their animations.
+The `Enemy` class controls enemy movement and keeps each enemy inside its assigned patrol area.
 
-The Character class contains the shared animation code.
+The rest of the code handles the level setup, enemies, menu buttons, game states, and the main Pygame Zero functions.
 
-The Player class handles player movement, jumping, gravity and platform
-collisions.
+## Assets
 
-The Enemy class handles enemy movement inside a specific patrol area.
+The game assets used in this project come from Kenney and are available under the CC0 license.
 
-The rest of the code creates the level, enemies, menu buttons and the
-main Pygame Zero functions.
+Kenney: https://kenney.nl
