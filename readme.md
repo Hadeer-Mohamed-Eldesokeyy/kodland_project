@@ -26,7 +26,6 @@ Mouse - Use the menu buttons
 
    pgzrun game.py
 
-The images, sounds and music should already be inside their folders.
 
 ## LIBRARIES USED
 
@@ -34,9 +33,6 @@ The project uses:
 
 * Pygame Zero
 * pygame.Rect
-
-Rect is only imported for collision detection, which is allowed in the
-project requirements.
 
 No other external libraries are used.
 
