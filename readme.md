@@ -77,7 +77,7 @@ music/
 
 ## ASSETS
 
-The images, sounds and music used in this project are from Kenney.
+The images, sounds and music used are from Kenney.
 
 Website:
 https://kenney.nl
