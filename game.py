@@ -1,3 +1,4 @@
+import math
 from pygame import Rect
 
 WIDTH = 800
@@ -23,16 +24,32 @@ class Character:
         self.moving = False
         self.facing_right = True
 
+        # used to make the pose gently bob up and down so movement and
+        # idling both look smooth, instead of the sprite snapping
+        # straight from one frame to the next
+        self.motion_time = 0
+        self.bob_offset = 0
+
     # Change between idle and walking frames
     def update_animation(self, dt):
         self.animation_time += dt
+        self.motion_time += dt
 
         if self.moving:
             frames = self.walk_frames
             frame_delay = 0.12
+            bob_amplitude = 2
+            bob_speed = 9
         else:
             frames = self.idle_frames
             frame_delay = 0.35
+            bob_amplitude = 3
+            bob_speed = 4
+
+        # a smooth, continuous up-and-down wave - used for a light
+        # "breathing" motion while idle and a light bounce while
+        # walking, so every character feels alive rather than static
+        self.bob_offset = math.sin(self.motion_time * bob_speed) * bob_amplitude
 
         if self.animation_time >= frame_delay:
             self.animation_time = 0
@@ -54,7 +71,12 @@ class Character:
         )
 
     def draw(self):
+        # the bob offset is only applied to the drawing position, so it
+        # never affects the actual collision position used for physics
+        original_y = self.actor.y
+        self.actor.y -= self.bob_offset
         self.actor.draw()
+        self.actor.y = original_y
 
 
 # Player movement and jumping
@@ -97,23 +119,36 @@ class Player(Character):
         self.actor.y += self.vertical_speed
         self.on_ground = False
 
+        box = self.get_rect()
         for platform in platforms:
-            if self.get_rect().colliderect(platform):
-                if self.vertical_speed >= 0:
-                    self.actor.y = platform.top - 40
-                    self.vertical_speed = 0
-                    self.on_ground = True
+            # pygame.Rect stores whole pixels, so a character resting
+            # exactly on a platform can end up "touching" rather than
+            # "overlapping" it. Using >= here (instead of the strict
+            # collision check) makes standing still perfectly stable,
+            # instead of flickering between on_ground True/False.
+            touching_sideways = box.right > platform.left and box.left < platform.right
+            touching_top = box.bottom >= platform.top and box.top < platform.bottom
+
+            if touching_sideways and touching_top and self.vertical_speed >= 0:
+                self.actor.y = platform.top - 40
+                self.vertical_speed = 0
+                self.on_ground = True
+                box = self.get_rect()
 
     def update_animation(self, dt):
         if not self.on_ground:
             self.actor.image = "player_jump"
             self.actor.flip_x = not self.facing_right
+            self.motion_time = 0
+            self.bob_offset = 0
         else:
             super().update_animation(dt)
 
 
 # enemy that moves inside its own limited area
 class Enemy(Character):
+    PAUSE_TIME = 1.0  # seconds spent idling at each end of the patrol
+
     def __init__(self, idle_frames, walk_frames, x, y,
                  left_limit, right_limit, speed):
 
@@ -123,17 +158,29 @@ class Enemy(Character):
         self.right_limit = right_limit
         self.speed = speed
         self.moving = True
+        self.pause_timer = 0
 
-    def patrol(self):
+    def patrol(self, dt):
+        # stand and idle for a moment at each end before turning back
+        if self.pause_timer > 0:
+            self.pause_timer -= dt
+            self.moving = False
+            return
+
+        self.moving = True
         self.actor.x += self.speed
 
         if self.actor.x >= self.right_limit:
+            self.actor.x = self.right_limit
             self.speed = -abs(self.speed)
             self.facing_right = False
+            self.pause_timer = self.PAUSE_TIME
 
         elif self.actor.x <= self.left_limit:
+            self.actor.x = self.left_limit
             self.speed = abs(self.speed)
             self.facing_right = True
+            self.pause_timer = self.PAUSE_TIME
 
 
 # floating platforms for the level
@@ -206,7 +253,7 @@ def update(dt):
     player.update_animation(dt)
 
     for enemy in enemies:
-        enemy.patrol()
+        enemy.patrol(dt)
         enemy.update_animation(dt)
 
     # player loses after falling
